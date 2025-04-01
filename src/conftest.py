@@ -22,7 +22,7 @@ def auth_session():
 
 @pytest.fixture()
 def booking_data():
-    return {
+    return ({
         "firstname": faker.first_name(),
         "lastname": faker.last_name(),
         "totalprice": faker.random_int(min=100, max=10000),
@@ -33,3 +33,43 @@ def booking_data():
         },
         "additionalneeds": "Breakfast"
     }
+    )
+
+@pytest.fixture()
+def booking_data_upd():
+    return ({
+        "firstname": faker.first_name(),
+        "lastname": faker.last_name(),
+        "totalprice": faker.random_int(min=100, max=10000),
+        "depositpaid": True,
+        "bookingdates": {
+            "checkin": "2024-04-05",
+            "checkout": "2024-04-08"
+        },
+        "additionalneeds": "Breakfast"
+    }
+    )
+
+@pytest.fixture()
+def booking_data_invalid():
+    return ({
+        "firstname": "",
+        "lastname": "",
+        "totalprice": "",
+        "depositpaid": True,
+        "bookingdates": {
+            "checkin": "2024-04-05",
+            "checkout": "2024-04-08"
+        },
+        "additionalneeds": "Breakfast"
+    }
+    )
+
+@pytest.fixture()
+def all_booking_ids(auth_session):
+    get_all_booking = auth_session.get(f"{BASE_URL}/booking/")
+    all_ids = get_all_booking.json()
+    booking_ids = list()
+    for item in all_ids:
+        booking_ids.append(item['bookingid'])
+    return booking_ids
