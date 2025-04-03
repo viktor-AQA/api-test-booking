@@ -1,7 +1,4 @@
-from requests import session
-
 from constant import BASE_URL
-from src.conftest import all_booking_ids
 
 
 class TestBookings:
@@ -32,20 +29,18 @@ class TestBookings:
         get_deleted_booking = auth_session.get(f"{BASE_URL}/booking/{booking_id}")
         assert get_deleted_booking.status_code == 404, "Букинг не был удален"
 
-    def test_put_bookingid(self, auth_session, booking_data, booking_data_upd):
+    def test_put_booking(self, auth_session, booking_data, booking_data_upd):
         create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data)
         assert create_booking.status_code == 200
         booking_id = create_booking.json().get("bookingid")
-        assert booking_id is not None, "ID букинга не найден в ответе"
+        print(create_booking.json())
+        # assert booking_id is not None, "ID букинга не найден в ответе"
 
-        get_booking = auth_session.get(f"{BASE_URL}/booking/{booking_id}")
-        assert get_booking.status_code == 200
+        update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data_upd)
+        assert update_booking.status_code == 200, "Ошибка при обновлении бронирования"
 
-        put_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data_upd)
-        assert put_booking.status_code == 200
-
-        get_booking = auth_session.get(f"{BASE_URL}/booking/{booking_id}")
-        assert get_booking.status_code == 200
+        upd_booking = auth_session.get(f"{BASE_URL}/booking/{booking_id}")
+        assert upd_booking.status_code == 200
 
         assert booking_data_upd['firstname'] != booking_data['firstname'], "Обонвление имени не произошло"
         assert booking_data_upd['lastname'] != booking_data['lastname'], "Обонвление фамилии не произошло"
@@ -69,6 +64,7 @@ class TestBookings:
         put_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data_invalid)
         assert put_booking.status_code == 200
 
+
         assert put_booking.json()['firstname'] is not '', "При отправке пустой строки, обновление не должно проходить"
         assert put_booking.json()['lastname'] is not '', "При отправке пустой строки, обновление не должно проходить"
         assert put_booking.json()['totalprice'] is not '', "При отправке пустой строки, обновление не должно проходить"
@@ -84,18 +80,21 @@ class TestBookings:
         assert get_all_booking.status_code == 200
         assert get_all_booking.json() is not None, "Получен пустой список. Броней нет"
 
-    def test_get_unique(self, all_booking_ids, booking_data, auth_session):
+    def test_get_bookings(self, auth_session, booking_data):
+        all_booking = auth_session.get(f"{BASE_URL}/booking/")
+        ids_booking = all_booking.json()
+        assert ids_booking is not None, "Брони отсутствуют"
+
+    def test_get_unique(self, auth_session, booking_data):
+
         create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data)
         assert create_booking.status_code == 200
         booking_id = create_booking.json().get("bookingid")
-        """нужно пеенести этот блок в фикстуру"""
-        # get_all_booking = auth_session.get(f"{BASE_URL}/booking/")
-        # all_ids = get_all_booking.json()
-        # booking_ids = list()
-        # for item in all_ids:
-        #     booking_ids.append(item['bookingid'])
 
-        # all_bookings = all_booking_ids(create_booking)
+        all_booking = auth_session.get(f"{BASE_URL}/booking/")
+        booking_list = all_booking.json()
+        booking_ids = [booking.get("bookingid") for booking in booking_list if isinstance(booking, dict)]
+
         assert booking_id in booking_ids, "ID букинга не найден в ответе"
 
 

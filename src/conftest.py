@@ -18,6 +18,7 @@ def auth_session():
     assert token is not None, "Токен не найден в ответе"
 
     session.headers.update({"Cookie": f"token={token}"})
+
     return session
 
 @pytest.fixture()
@@ -65,11 +66,3 @@ def booking_data_invalid():
     }
     )
 
-@pytest.fixture()
-def all_booking_ids(auth_session):
-    get_all_booking = auth_session.get(f"{BASE_URL}/booking/")
-    all_ids = get_all_booking.json()
-    booking_ids = list()
-    for item in all_ids:
-        booking_ids.append(item['bookingid'])
-    return booking_ids
