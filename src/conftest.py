@@ -1,8 +1,8 @@
 from faker import Faker
 import pytest
 import requests
-
 from constant import BASE_URL, HEADERS
+
 
 faker = Faker()
 
@@ -65,4 +65,3 @@ def booking_data_invalid():
         "additionalneeds": "Breakfast"
     }
     )
-

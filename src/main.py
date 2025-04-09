@@ -2,7 +2,6 @@ from constant import BASE_URL
 
 
 class TestBookings:
-
     def test_create_booking(self, auth_session, booking_data):
 
         create_booking = auth_session.post(f"{BASE_URL}/booking", json=booking_data)
@@ -34,7 +33,6 @@ class TestBookings:
         assert create_booking.status_code == 200
         booking_id = create_booking.json().get("bookingid")
         print(create_booking.json())
-        # assert booking_id is not None, "ID букинга не найден в ответе"
 
         update_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data_upd)
         assert update_booking.status_code == 200, "Ошибка при обновлении бронирования"
@@ -63,7 +61,6 @@ class TestBookings:
 
         put_booking = auth_session.put(f"{BASE_URL}/booking/{booking_id}", json=booking_data_invalid)
         assert put_booking.status_code == 200
-
 
         assert put_booking.json()['firstname'] is not '', "При отправке пустой строки, обновление не должно проходить"
         assert put_booking.json()['lastname'] is not '', "При отправке пустой строки, обновление не должно проходить"
