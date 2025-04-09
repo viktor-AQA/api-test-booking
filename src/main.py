@@ -93,5 +93,3 @@ class TestBookings:
         booking_ids = [booking.get("bookingid") for booking in booking_list if isinstance(booking, dict)]
 
         assert booking_id in booking_ids, "ID букинга не найден в ответе"
-
-
